@@ -22,7 +22,7 @@ AHero::AHero()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
-	GetCharacterMovement()->JumpZVelocity = 400.0f;
+	GetCharacterMovement()->JumpZVelocity = 430.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -40,8 +40,17 @@ AHero::AHero()
 	Power = 100.0f;
 
 	// Crouch Section
+
 	CrouchEyeOffset = FVector(0.f);
 	CrouchSpeed = 12.f;
+	
+	//Stamina Section
+
+	isSprinting = false;
+	currentStamina = 1.0f;
+	maxStamina = 1.0f;
+	staminaSprintUsageRate = 0.05f;
+	staminaRechargeRate = 0.1f;
 }
 
 
@@ -64,6 +73,7 @@ void AHero::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (bIsCrouched) {
+		isSprinting = false;
 		if (GetCharacterMovement()->Velocity.Size() > 1.0f) {
 			GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
 			GetMesh()->SetRelativeLocation(FVector(-20.f, 0.f, -75.f));
@@ -75,21 +85,18 @@ void AHero::Tick(float DeltaTime)
 	}
 	float CrouchInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
 	CrouchEyeOffset = (1.f - CrouchInterpTime) * CrouchEyeOffset;
-	/*
-	Power -= DeltaTime * Power_Treshold;
 
-	if (Power <= 0) {
-		if (!bDead) {
-			bDead = true;
-			
-			GetMesh()->SetSimulatePhysics(true);
-
-			FTimerHandle UnsedHandle;
-			GetWorldTimerManager().SetTimer(UnsedHandle, this, &AHero::RestartGame, 3.0f, false);
-
+	if (isSprinting)
+	{
+		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+	}
+	else 
+	{
+		if (currentStamina < maxStamina)
+		{
+			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaSprintUsageRate);
 		}
 	}
-	*/
 }
 
 // Called to bind functionality to input
@@ -153,12 +160,18 @@ void AHero::MoveRight(float Axis)
 
 void AHero::StartWalking()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	isSprinting = true;
+	if (isSprinting) {
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	}
 }
 
 void AHero::EndWalking()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	isSprinting = false;
+	if (!isSprinting) {
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	}
 }
 
 
@@ -186,32 +199,6 @@ void AHero::RestartGame()
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
-//Climbing
-void AHero::ForwardTrace()
-{
-	TArray<FHitResult> OutHits;
-	
-	FVector ActorLocation = GetActorLocation();
-	
-	FVector ActorEnd = GetActorForwardVector();
-	
-	FCollisionShape MyColSphere = FCollisionShape::MakeSphere(10.f);
-	
-	const bool isHit = GetWorld()->SweepMultiByChannel(OutHits, ActorLocation, ActorEnd * 150 + ActorLocation, FQuat::Identity, ECC_Camera, MyColSphere);
-
-	DrawDebugSphere(GetWorld(), ActorLocation, MyColSphere.GetSphereRadius(), 10, FColor::Red, true);
-	
-	/*if (isHit) {
-		for (FHitResult const HitResult : OutHits)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, FString::Printf(TEXT("Hit: %s"), *HitResult.GetActor()->GetName()));
-		}
-	}
-	*/
-}
-void AHero::HeightTrace()
-{
-}
 
 // Crouching Section
 void AHero::StartCrouch()

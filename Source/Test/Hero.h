@@ -60,10 +60,12 @@ public:
 	UUserWidget* Player_Power_Widget;
 
 	// Climbing 
+	/*
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 		void ForwardTrace();
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 		void HeightTrace();
+		*/
 
 	// Crouching Section
 
@@ -91,6 +93,27 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+public:
+
+	// The amount of stamina player is currently has.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float currentStamina;
+
+	// The amount of max stamina player can have at once.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float maxStamina;
+
+	// The rate stamina is is used when sprinting.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaSprintUsageRate;
+
+	// The rate stamina is recharged
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaRechargeRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		bool isSprinting;
 
 public:	
 	// Called every frame
