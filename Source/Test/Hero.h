@@ -115,6 +115,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 		bool isAttacking;
+	
+	//The blocking state
+	UFUNCTION(BlueprintCallable)
+		void StartBlocking();
+
+	UFUNCTION(BlueprintCallable)
+		void StopBlocking();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blocking")
+		bool isBlocking;
+
 
 public:	
 	// Called every frame

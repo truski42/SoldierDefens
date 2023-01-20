@@ -44,9 +44,10 @@ AHero::AHero()
 	CrouchEyeOffset = FVector(0.f);
 	CrouchSpeed = 12.f;
 	
-	// Attacking Section
+	// Attacking and Blocking
 
 	isAttacking = false;
+	isBlocking = false;
 
 	//Stamina Section
 
@@ -71,6 +72,7 @@ void AHero::BeginPlay()
 	}
 	
 }
+
 
 // Called every frame
 void AHero::Tick(float DeltaTime)
@@ -136,6 +138,12 @@ void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	// Atacking
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHero::Attack);
+
+	// Blocking
+	PlayerInputComponent->BindAction("Block", IE_Pressed, this, &AHero::StartBlocking);
+	PlayerInputComponent->BindAction("Block", IE_Released, this, &AHero::StopBlocking);
+
+
 }
 
 // Movement Section
@@ -169,12 +177,6 @@ void AHero::MoveRight(float Axis)
 
 }
 
-void AHero::Attack()
-{
-	isAttacking = true;
-	UE_LOG(LogTemp, Warning, TEXT("Attack"));
-}
-
 void AHero::StartWalking()
 {
 	isSprinting = true;
@@ -188,6 +190,22 @@ void AHero::EndWalking()
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 }
 
+// Attack and Block Section
+void AHero::StartBlocking()
+{
+	isBlocking = true;
+}
+
+void AHero::StopBlocking()
+{
+	isBlocking = false;
+}
+
+void AHero::Attack()
+{
+	isAttacking = true;
+	UE_LOG(LogTemp, Warning, TEXT("Attack"));
+}
 
 // BeginOverlap Section
 void AHero::OnBeginOverlap(UPrimitiveComponent* HitComp, 
