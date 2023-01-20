@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -59,13 +60,6 @@ public:
 
 	UUserWidget* Player_Power_Widget;
 
-	// Climbing 
-	/*
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
-		void ForwardTrace();
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
-		void HeightTrace();
-		*/
 
 	// Crouching Section
 
@@ -86,6 +80,10 @@ public:
 	void EndWalking();
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
+
+	// Attack Section
+	void Attack();
+
 
 	//Restart Game Function
 	void RestartGame();
@@ -114,6 +112,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		bool isSprinting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+		bool isAttacking;
 
 public:	
 	// Called every frame

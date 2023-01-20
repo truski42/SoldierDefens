@@ -44,6 +44,10 @@ AHero::AHero()
 	CrouchEyeOffset = FVector(0.f);
 	CrouchSpeed = 12.f;
 	
+	// Attacking Section
+
+	isAttacking = false;
+
 	//Stamina Section
 
 	isSprinting = false;
@@ -88,7 +92,13 @@ void AHero::Tick(float DeltaTime)
 
 	if (isSprinting)
 	{
-		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+		if (currentStamina > 0.0f) {
+			currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+		}
+		else
+		{
+			EndWalking();
+		}
 	}
 	else 
 	{
@@ -124,7 +134,8 @@ void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Walking", IE_Pressed, this, &AHero::StartWalking);
 	PlayerInputComponent->BindAction("Walking", IE_Released, this, &AHero::EndWalking);
 
-
+	// Atacking
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHero::Attack);
 }
 
 // Movement Section
@@ -158,20 +169,23 @@ void AHero::MoveRight(float Axis)
 
 }
 
+void AHero::Attack()
+{
+	isAttacking = true;
+	UE_LOG(LogTemp, Warning, TEXT("Attack"));
+}
+
 void AHero::StartWalking()
 {
 	isSprinting = true;
-	if (isSprinting) {
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	}
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+
 }
 
 void AHero::EndWalking()
 {
 	isSprinting = false;
-	if (!isSprinting) {
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	}
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 }
 
 
