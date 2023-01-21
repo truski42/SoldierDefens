@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/Vector.h"
+#include "Public/HealthComponent.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -37,7 +38,8 @@ AHero::AHero()
 
 
 	bDead = false;
-	Power = 100.0f;
+	onLadder = false;
+	nearLadder = false;
 
 	// Crouch Section
 
@@ -55,7 +57,13 @@ AHero::AHero()
 	currentStamina = 1.0f;
 	maxStamina = 1.0f;
 	staminaSprintUsageRate = 0.05f;
+	staminaAttackUsageRate = 0.1;
 	staminaRechargeRate = 0.1f;
+
+	// Health
+	DefaultHealth = 100.f;
+	Health = DefaultHealth;
+	bDoOnce = true;
 }
 
 
@@ -64,12 +72,6 @@ AHero::AHero()
 void AHero::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AHero::OnBeginOverlap);
-
-	if (Player_Power_Widget_Class != nullptr) {
-		Player_Power_Widget = CreateWidget(GetWorld(), Player_Power_Widget_Class);
-		Player_Power_Widget->AddToViewport();
-	}
 	
 }
 
@@ -78,38 +80,80 @@ void AHero::BeginPlay()
 void AHero::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bIsCrouched) {
-		isSprinting = false;
-		if (GetCharacterMovement()->Velocity.Size() > 1.0f) {
-			GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
-			GetMesh()->SetRelativeLocation(FVector(-20.f, 0.f, -75.f));
-		}
-		else {
-			GetCapsuleComponent()->SetCapsuleHalfHeight(55.0f);
-			GetMesh()->SetRelativeLocation(FVector(-20.f, 0.f, -57.f));
-		}
-	}
-	float CrouchInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
-	CrouchEyeOffset = (1.f - CrouchInterpTime) * CrouchEyeOffset;
+	if (!bDead) {
 
-	if (isSprinting)
-	{
-		if (currentStamina > 0.0f) {
-			currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+		if (bIsCrouched) {
+			isSprinting = false;
+			if (GetCharacterMovement()->Velocity.Size() > 1.0f) {
+				GetCapsuleComponent()->SetCapsuleHalfHeight(70.0f);
+				GetMesh()->SetRelativeLocation(FVector(-20.f, 0.f, -75.f));
+			}
+			else {
+				GetCapsuleComponent()->SetCapsuleHalfHeight(55.0f);
+				GetMesh()->SetRelativeLocation(FVector(-20.f, 0.f, -57.f));
+			}
+		}
+		float CrouchInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
+		CrouchEyeOffset = (1.f - CrouchInterpTime) * CrouchEyeOffset;
+
+		// Taking Stamina after attack with hand
+		if (isAttacking)
+		{
+			if (currentStamina > 0.1f) {
+				currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaAttackUsageRate);
+			}
+			else
+			{
+				StopAttcking();
+			}
+		}
+
+		// Taking staming sprinting
+		if (isSprinting)
+		{
+			if (currentStamina > 0.0f) {
+				currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+			}
+			else
+			{
+				EndWalking();
+			}
 		}
 		else
 		{
-			EndWalking();
+			if (currentStamina < maxStamina)
+			{
+				currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaSprintUsageRate);
+			}
+		}
+
+		if (GetCharacterMovement()->IsFalling())
+		{
+			if (bDoOnce) {
+				StartingHeight = GetActorLocation().Z;
+				bDoOnce = false;
+				if (GEngine)
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f = FloatVariable"), StartingHeight));
+			}
 		}
 	}
-	else 
+
+}
+
+void AHero::Landed(const FHitResult& Hit)
+{
+	Hit.GetActor();
+	EndHeight = GetActorLocation().Z;
+	Difference = StartingHeight - EndHeight;
+	if (Difference >= 1000) {
+		Health = 0;
+	}
+	else
 	{
-		if (currentStamina < maxStamina)
-		{
-			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaSprintUsageRate);
-		}
+		Health = Health - 30.0f;
 	}
 }
+
 
 // Called to bind functionality to input
 void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -137,11 +181,13 @@ void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Walking", IE_Released, this, &AHero::EndWalking);
 
 	// Atacking
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHero::Attack);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AHero::AttackFunc);
 
 	// Blocking
 	PlayerInputComponent->BindAction("Block", IE_Pressed, this, &AHero::StartBlocking);
 	PlayerInputComponent->BindAction("Block", IE_Released, this, &AHero::StopBlocking);
+
+
 
 
 }
@@ -157,8 +203,8 @@ void AHero::MoveForward(float Axis)
 
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			AddMovementInput(Direction, Axis);
-
 		}
+
 	}
 }
 
@@ -171,7 +217,6 @@ void AHero::MoveRight(float Axis)
 
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 			AddMovementInput(Direction, Axis);
-
 		}
 	}
 
@@ -201,26 +246,14 @@ void AHero::StopBlocking()
 	isBlocking = false;
 }
 
-void AHero::Attack()
+void AHero::AttackFunc()
 {
 	isAttacking = true;
 	UE_LOG(LogTemp, Warning, TEXT("Attack"));
 }
-
-// BeginOverlap Section
-void AHero::OnBeginOverlap(UPrimitiveComponent* HitComp, 
-	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
-	bool bFromSweep, const FHitResult& SweepResult)
+void AHero::StopAttcking() 
 {
-	if (OtherActor->ActorHasTag("Recharge")) {
-		Power += 10.0f;
-
-		if (Power > 100.0f) {
-			Power = 100.0f;
-		}
-		OtherActor->Destroy();
-	}
-
+	isAttacking = false;
 }
 
 

@@ -27,6 +27,12 @@ public:
 	// Sets default values for this character's properties
 	AHero();
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+
 	// Camera 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -35,31 +41,26 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		UCameraComponent* FollowCamera;
 
-	bool bDead;
+	// Max Health
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Health;
+	// Default Health
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DefaultHealth;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
-		float Power;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bDead;
 
-	UPROPERTY(EditAnyWhere)
-		float Power_Treshold;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool onLadder;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool nearLadder;
+
+	// Climbing
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isClimbing;
-
-	// Function OnBeginOverlap with Actor
-
-	UFUNCTION()
-		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
-			class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
-			int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
-
-	//Power Widget
-
-	UPROPERTY(EditAnyWhere, Category = "UI HUD")
-		TSubclassOf<UUserWidget> Player_Power_Widget_Class;
-
-	UUserWidget* Player_Power_Widget;
-
 
 	// Crouching Section
 
@@ -68,7 +69,7 @@ public:
 	void CalcCamera(float DelataTime, struct FMinimalViewInfo& OutResult) override;
 	void StartCrouch();
 	void EndCrouch();
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
 		FVector CrouchEyeOffset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
@@ -82,18 +83,16 @@ public:
 	void MoveRight(float Axis);
 
 	// Attack Section
-	void Attack();
+	UFUNCTION(BlueprintCallable)
+		void AttackFunc();
+
+	UFUNCTION(BlueprintCallable)
+		void StopAttcking();
 
 
 	//Restart Game Function
-	void RestartGame();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-
+	UFUNCTION(BlueprintCallable)
+		void RestartGame();
 	// The amount of stamina player is currently has.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float currentStamina;
@@ -105,6 +104,10 @@ public:
 	// The rate stamina is is used when sprinting.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float staminaSprintUsageRate;
+
+	// The rate stamina is used when attacking
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaAttackUsageRate;
 
 	// The rate stamina is recharged
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
@@ -126,10 +129,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blocking")
 		bool isBlocking;
 
+	// Damage from fall
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DMGFromFalling")
+		float dmgFall;
+	bool bDoOnce;
+	float StartingHeight;
+	float EndHeight;
+	float Difference;
+	//void TakeDmgFromFall();
+
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void Landed(const FHitResult& Hit) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
