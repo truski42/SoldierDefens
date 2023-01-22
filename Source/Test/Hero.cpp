@@ -63,7 +63,9 @@ AHero::AHero()
 	// Health
 	DefaultHealth = 100.f;
 	Health = DefaultHealth;
-	bDoOnce = true;
+	
+	//Damage
+	Damage = 2.0f;
 }
 
 
@@ -97,6 +99,7 @@ void AHero::Tick(float DeltaTime)
 		CrouchEyeOffset = (1.f - CrouchInterpTime) * CrouchEyeOffset;
 
 		// Taking Stamina after attack with hand
+
 		if (isAttacking)
 		{
 			if (currentStamina > 0.1f) {
@@ -107,8 +110,19 @@ void AHero::Tick(float DeltaTime)
 				StopAttcking();
 			}
 		}
+		// Taking Stamina when blocking
 
+		if (isBlocking) {
+			if (currentStamina > 0.1f) {
+				currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+			}
+			else
+			{
+				StopBlocking();
+			}
+		}
 		// Taking staming sprinting
+
 		if (isSprinting)
 		{
 			if (currentStamina > 0.0f) {
@@ -126,33 +140,16 @@ void AHero::Tick(float DeltaTime)
 				currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaSprintUsageRate);
 			}
 		}
-
-		if (GetCharacterMovement()->IsFalling())
-		{
-			if (bDoOnce) {
-				StartingHeight = GetActorLocation().Z;
-				bDoOnce = false;
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f = FloatVariable"), StartingHeight));
-			}
-		}
 	}
 
 }
-
+/*
 void AHero::Landed(const FHitResult& Hit)
 {
 	Hit.GetActor();
-	EndHeight = GetActorLocation().Z;
-	Difference = StartingHeight - EndHeight;
-	if (Difference >= 1000) {
-		Health = 0;
-	}
-	else
-	{
-		Health = Health - 30.0f;
-	}
+
 }
+*/
 
 
 // Called to bind functionality to input

@@ -129,20 +129,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blocking")
 		bool isBlocking;
 
-	// Damage from fall
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DMGFromFalling")
-		float dmgFall;
-	bool bDoOnce;
-	float StartingHeight;
-	float EndHeight;
-	float Difference;
-	//void TakeDmgFromFall();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DMG")
+		float Damage;
+
 
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Landed(const FHitResult& Hit) override;
+	//virtual void Landed(const FHitResult& Hit) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
