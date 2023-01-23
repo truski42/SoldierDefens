@@ -33,6 +33,48 @@ protected:
 
 public:
 
+	// Functions
+
+	//The blocking state
+	UFUNCTION(BlueprintCallable)
+		void StartBlocking();
+
+	UFUNCTION(BlueprintCallable)
+		void StopBlocking();
+
+	// Crouching Section
+
+	void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+	void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+	void CalcCamera(float DelataTime, struct FMinimalViewInfo& OutResult) override;
+	void StartCrouch();
+	void EndCrouch();
+
+	// Movement Section
+
+	void StartWalking();
+	void EndWalking();
+	void MoveForward(float Axis);
+	void MoveRight(float Axis);
+
+	// Attack Section
+	UFUNCTION(BlueprintCallable)
+		void AttackFunc();
+
+	UFUNCTION(BlueprintCallable)
+		void StopAttcking();
+
+	//Restart Game Function
+	UFUNCTION(BlueprintCallable)
+		void RestartGame();
+
+	//The character earns experience
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+		void GainExperience(float _expAmount);
+
+
+	// Variables
+	
 	// Camera 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -40,6 +82,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
+		FVector CrouchEyeOffset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
+		float CrouchSpeed;
 
 	// Max Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -62,37 +109,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isClimbing;
 
-	// Crouching Section
-
-	void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-	void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-	void CalcCamera(float DelataTime, struct FMinimalViewInfo& OutResult) override;
-	void StartCrouch();
-	void EndCrouch();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
-		FVector CrouchEyeOffset;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Crouch")
-		float CrouchSpeed;
-
-	// Movement Section
-
-	void StartWalking();
-	void EndWalking();
-	void MoveForward(float Axis);
-	void MoveRight(float Axis);
-
-	// Attack Section
-	UFUNCTION(BlueprintCallable)
-		void AttackFunc();
-
-	UFUNCTION(BlueprintCallable)
-		void StopAttcking();
-
-
-	//Restart Game Function
-	UFUNCTION(BlueprintCallable)
-		void RestartGame();
 	// The amount of stamina player is currently has.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float currentStamina;
@@ -118,22 +134,26 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 		bool isAttacking;
-	
-	//The blocking state
-	UFUNCTION(BlueprintCallable)
-		void StartBlocking();
-
-	UFUNCTION(BlueprintCallable)
-		void StopBlocking();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blocking")
 		bool isBlocking;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DMG")
-		float Damage;
+		float Strenght;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		int currentLevel;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		int upgradePoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float experiencePoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float experienceToLevel;
+	
 
 public:	
 	// Called every frame

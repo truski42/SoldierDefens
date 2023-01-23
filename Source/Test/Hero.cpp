@@ -64,8 +64,14 @@ AHero::AHero()
 	DefaultHealth = 100.f;
 	Health = DefaultHealth;
 	
+	// Level
+	currentLevel = 1;
+	upgradePoints = 5;
+	experiencePoints = 0.0f;
+	experienceToLevel = 2000.f;
+
 	//Damage
-	Damage = 2.0f;
+	Strenght = 1;
 }
 
 
@@ -112,18 +118,10 @@ void AHero::Tick(float DeltaTime)
 		}
 		// Taking Stamina when blocking
 
-		if (isBlocking) {
-			if (currentStamina > 0.1f) {
-				currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
-			}
-			else
-			{
-				StopBlocking();
-			}
-		}
+
 		// Taking staming sprinting
 
-		if (isSprinting)
+		if (isSprinting || isBlocking)
 		{
 			if (currentStamina > 0.0f) {
 				currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
@@ -131,6 +129,7 @@ void AHero::Tick(float DeltaTime)
 			else
 			{
 				EndWalking();
+				StopBlocking();
 			}
 		}
 		else
@@ -259,6 +258,19 @@ void AHero::StopAttcking()
 void AHero::RestartGame()
 {
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+}
+
+
+void AHero::GainExperience(float _expAmount)
+{
+	experiencePoints += _expAmount;
+
+	if (experiencePoints >= experienceToLevel) {
+		++currentLevel;
+
+		experiencePoints -= experienceToLevel;
+		experienceToLevel += 500.0f;
+	}
 }
 
 
