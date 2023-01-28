@@ -79,11 +79,42 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Die();
 
+	// Character starts targeting/locking on to an object
+	UFUNCTION(BlueprintCallable)
+		void ToggleLockOn();
+	
+	void ChangeLockOnTarget();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Lock-On")
+		void ToggleLockOnEffect();
+
 	bool blockdir;
 
 
 	// Variables
 	
+	// Targeting/locking
+
+	// Determines if the character is currently targeting/locking on to an object
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock-on")
+		bool bisLockedOn;
+
+	// the max distance of targeting/lock-on
+	float maxTargetingDistance;
+
+	// the yaw-offest provided to the camera during targeting/lock-on.
+	float targetingHeightOffeset;
+	
+	// The Actor currently begin tracked/locked on to by the character
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock-On")
+		AActor* lockedOnActor;
+
+	// The actors within lock-on range with the potential to be targeted
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock-On")
+		TArray<AActor*> lockOnCandidates;
+
+
+
 	// Camera 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

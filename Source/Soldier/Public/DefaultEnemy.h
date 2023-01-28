@@ -35,7 +35,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 		bool hasTakenDamage;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 		float health;
 

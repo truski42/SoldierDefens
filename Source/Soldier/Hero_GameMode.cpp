@@ -34,6 +34,3 @@ void AHero_GameMode::SpawnPlayerRecharge()
 	GetWorld()->SpawnActor(PlayerRecharge, &SpawnPosition, &SpawnRotator);	
 }
 
-void AHero_GameMode::SpawnChairs()
-{
-}

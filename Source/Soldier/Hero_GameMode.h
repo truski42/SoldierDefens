@@ -41,4 +41,9 @@ class SOLDIER_API AHero_GameMode : public AGameMode
 
 	void SpawnPlayerRecharge();
 	void SpawnChairs();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int EnemyAlive;
+
 };
