@@ -88,11 +88,21 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Lock-On")
 		void ToggleLockOnEffect();
 
+	// Allows the character to equip an any item they are close to
+	void EquipItem();
+
 	bool blockdir;
 
 
 	// Variables
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bHasSwordandShield;
+
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+		bool bIsOverlappingItem;
+
 	// Targeting/locking
 
 	// Determines if the character is currently targeting/locking on to an object

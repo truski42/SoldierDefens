@@ -82,6 +82,12 @@ AHero::AHero()
 	maxTargetingDistance = 2000.0f;
 	targetingHeightOffeset = 20.0f;
 	lockedOnActor = nullptr;
+
+	// Has sword and shield
+	bHasSwordandShield = false;
+
+	// Items
+	bIsOverlappingItem = false;
 }
 
 
@@ -139,6 +145,8 @@ void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("ChangingTargetEnemy", IE_Pressed, this, &AHero::ChangeLockOnTarget);
 	//PlayerInputComponent->BindAction("TargetEnemy", IE_Released, this, &AHero::ToggleLockOn);
 
+	// Equip items
+	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &AHero::EquipItem);
 
 }
 
@@ -221,6 +229,9 @@ void AHero::TakeDamagePlayer(float _damage) {
 	}
 
 }
+
+// Dying function
+
 void AHero::Die() {
 	bDead = true;
 
@@ -234,6 +245,7 @@ void AHero::RestartGame()
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
+// Gain Experience after killing the enemy
 
 void AHero::GainExperience(float _expAmount)
 {
@@ -299,6 +311,16 @@ void AHero::ChangeLockOnTarget()
 				break;
 			}
 		}
+	}
+}
+
+
+// Allows the character to equip an any item they are close to
+
+void AHero::EquipItem()
+{
+	if (bIsOverlappingItem) {
+		UE_LOG(LogTemp, Warning, TEXT("We picked up an item"));
 	}
 }
 
