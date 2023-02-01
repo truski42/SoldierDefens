@@ -43,7 +43,10 @@ class SOLDIER_API AHero_GameMode : public AGameMode
 	void SpawnChairs();
 
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int EnemyAlive;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int WaveLevel;
 };

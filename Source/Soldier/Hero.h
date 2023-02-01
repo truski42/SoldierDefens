@@ -206,6 +206,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float experienceToLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+		int coin;
 	
 
 public:	

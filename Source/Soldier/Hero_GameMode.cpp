@@ -8,6 +8,7 @@ AHero_GameMode::AHero_GameMode() {
 
 	PrimaryActorTick.bCanEverTick = true;
 
+	WaveLevel = 1;
 }
 
 void AHero_GameMode::BeginPlay()

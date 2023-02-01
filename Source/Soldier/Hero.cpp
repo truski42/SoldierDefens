@@ -63,12 +63,12 @@ AHero::AHero()
 	staminaRechargeRate = 0.1f;
 
 	// Health
-	DefaultHealth = 10.f;
+	DefaultHealth = 10.0f;
 	Health = DefaultHealth;
 	
 	// Level
 	currentLevel = 1;
-	upgradePoints = 5;
+	upgradePoints = 0;
 	experiencePoints = 0.0f;
 	experienceToLevel = 2000.f;
 
@@ -88,6 +88,7 @@ AHero::AHero()
 
 	// Items
 	bIsOverlappingItem = false;
+	coin = 0;
 }
 
 
@@ -253,7 +254,8 @@ void AHero::GainExperience(float _expAmount)
 
 	if (experiencePoints >= experienceToLevel) {
 		++currentLevel;
-
+		++upgradePoints;
+		Health = DefaultHealth;
 		experiencePoints -= experienceToLevel;
 		experienceToLevel += 500.0f;
 	}
