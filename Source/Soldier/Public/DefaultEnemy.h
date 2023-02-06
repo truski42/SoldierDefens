@@ -30,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AttackEnemy(AActor* Actor);
 
+	UFUNCTION(BlueprintCallable)
+		void LevelUPStats();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 		bool isDead;
 
@@ -47,6 +50,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 		int EnemyStrenght;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
+		int EnemyLevel;
+	int GameModeWave;
 
 
 	//class USphereComponent* GetDetectPlayerCollisionSphere();

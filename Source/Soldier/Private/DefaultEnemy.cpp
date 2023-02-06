@@ -7,6 +7,8 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Soldier/Hero.h"
+#include "Soldier/Hero_GameMode.h"
+
 
 
 // Sets default values
@@ -17,10 +19,12 @@ ADefaultEnemy::ADefaultEnemy()
 	isDead = false;
 	hasTakenDamage = false;
 
-	health = 1.0f;
+	defaultHealth = 1.0f;
 	expWorth = 0.0f;
-	defaultHealth = health;
+	health = defaultHealth;
 	EnemyStrenght = 1.0f;
+
+	//EnemyLevel = 0;
 
 	
 	EnemyAttackCollisionBox =
@@ -29,7 +33,7 @@ ADefaultEnemy::ADefaultEnemy()
 
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 
-
+	GameModeWave = 0;
 
 	//DetectPlayerCollisionSphere =
 		//CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
@@ -41,7 +45,12 @@ ADefaultEnemy::ADefaultEnemy()
 void ADefaultEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	AHero_GameMode* GameMode = (AHero_GameMode*)GetWorld()->GetAuthGameMode();
+	//EnemyLevel = GameMode->WaveLevel;
+	//for (int i = 0; i < GameModeWave; i++) {
+
+	//}
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Health %f"), defaultHealth));
 }
 
 
@@ -68,6 +77,11 @@ void ADefaultEnemy::TakeDamage(float _damage)
 	else {
 		hasTakenDamage = true;
 	}
+}
+
+void ADefaultEnemy::LevelUPStats() {
+	defaultHealth += 2.0f;
+	EnemyStrenght += 1.0f;
 }
 
 void ADefaultEnemy::Die()

@@ -40,7 +40,6 @@ class SOLDIER_API AHero_GameMode : public AGameMode
 		float SpawnY_Max;
 
 	void SpawnPlayerRecharge();
-	void SpawnChairs();
 
 public:
 
