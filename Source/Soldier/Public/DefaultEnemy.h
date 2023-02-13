@@ -22,6 +22,7 @@ protected:
 
 public:
 
+
 	UFUNCTION(BlueprintCallable)
 		void TakeDamage(float _damage);
 
@@ -29,9 +30,6 @@ public:
 		void Die();
 	UFUNCTION(BlueprintCallable)
 		void AttackEnemy(AActor* Actor);
-
-	UFUNCTION(BlueprintCallable)
-		void LevelUPStats();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 		bool isDead;

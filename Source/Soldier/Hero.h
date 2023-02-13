@@ -9,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -33,7 +34,7 @@ protected:
 
 public:
 
-	// Functions
+	// Start functions
 
 	//The blocking state
 	UFUNCTION(BlueprintCallable)
@@ -91,10 +92,12 @@ public:
 	// Allows the character to equip an any item they are close to
 	void EquipItem();
 
+	// End functions
+
 	bool blockdir;
 
 
-	// Variables
+	// Start Variables
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bHasSwordandShield;
@@ -122,6 +125,11 @@ public:
 	// The actors within lock-on range with the potential to be targeted
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock-On")
 		TArray<AActor*> lockOnCandidates;
+
+	// Sounds
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = "true"))
+		class USoundCue* LevelUpSoundCue;
 
 
 
@@ -210,6 +218,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 		int coin;
 	
+	//End Variables
 
 public:	
 	// Called every frame
@@ -219,4 +228,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+private:
+	UAudioComponent* LevelUPAudioComponent;
 };

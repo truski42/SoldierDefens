@@ -79,11 +79,6 @@ void ADefaultEnemy::TakeDamage(float _damage)
 	}
 }
 
-void ADefaultEnemy::LevelUPStats() {
-	defaultHealth += 2.0f;
-	EnemyStrenght += 1.0f;
-}
-
 void ADefaultEnemy::Die()
 {
 	isDead = true;

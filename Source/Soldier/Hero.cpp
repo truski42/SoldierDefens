@@ -9,7 +9,10 @@
 #include "Public/HealthComponent.h"
 #include "DefaultEnemy.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "UObject/ConstructorHelpers.h"
 #include "DrawDebugHelpers.h"
+
+#include "Engine.h"
 
 // Sets default values
 AHero::AHero()
@@ -76,7 +79,16 @@ AHero::AHero()
 	Strenght = 1;
 	hasTakenDamage = false;
 
+	// Sound Cue
+	static ConstructorHelpers::FObjectFinder<USoundCue> LevelUpSoundCueObject(TEXT("'SoundCue'/Game/Sounds/LevelUp.LevelUp''"));
+	if (LevelUpSoundCueObject.Succeeded()) {
+		LevelUpSoundCue = LevelUpSoundCueObject.Object;
 
+
+		LevelUPAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("LevelUPAudioComponent"));
+		LevelUPAudioComponent->SetupAttachment(RootComponent);
+
+	}
 	// Targeting/locking
 	bisLockedOn = false;
 	maxTargetingDistance = 2000.0f;
@@ -98,6 +110,10 @@ void AHero::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Set up Audio
+	if (LevelUPAudioComponent && LevelUpSoundCue) {
+		LevelUPAudioComponent->SetSound(LevelUpSoundCue);
+	}
 }
 
 /*
@@ -255,9 +271,15 @@ void AHero::GainExperience(float _expAmount)
 	if (experiencePoints >= experienceToLevel) {
 		++currentLevel;
 		++upgradePoints;
+
 		Health = DefaultHealth;
+		maxStamina += 0.2f;
+		currentStamina = maxStamina;
 		experiencePoints -= experienceToLevel;
 		experienceToLevel += 500.0f;
+		if (LevelUPAudioComponent && LevelUpSoundCue) {
+			LevelUPAudioComponent->Play(0.f);
+		}
 	}
 }
 
