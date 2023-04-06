@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Soldier/Hero.h"
+#include "Soldier/Hero_GameMode.h"
 #include "DefaultEnemy.generated.h"
+
 
 UCLASS()
 class SOLDIER_API ADefaultEnemy : public ACharacter

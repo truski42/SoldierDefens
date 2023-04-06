@@ -348,6 +348,11 @@ void AHero::EquipItem()
 	}
 }
 
+void AHero::SpendMoney(int TakenMoney)
+{
+	coin -= TakenMoney;
+}
+
 
 // Crouching Section
 void AHero::StartCrouch()

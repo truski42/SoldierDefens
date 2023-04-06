@@ -92,6 +92,9 @@ public:
 	// Allows the character to equip an any item they are close to
 	void EquipItem();
 
+	UFUNCTION(BlueprintCallable, Category = "Money")
+	void SpendMoney(int TakenMoney);
+
 	// End functions
 
 	bool blockdir;
